@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local design reference assets
+/public/0 State screen.svg
+/public/Dashboard.png
+/public/Dashboard.svg
+/public/assignment-form.png
+/public/assignment-form.svg
+/public/mobile_assignment-form.svg
+/public/avatar_1.jpeg
+/public/avatar_2.jpeg
