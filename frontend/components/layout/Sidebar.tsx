@@ -1,0 +1,94 @@
+"use client";
+
+import Image from "next/image";
+import { Settings } from "lucide-react";
+
+type SidebarProps = {
+  activeItem?: string;
+};
+
+const navItems = [
+  { label: "Home", icon: "/home.svg" },
+  { label: "My Groups", icon: "/groups.svg" },
+  { label: "Assignments", icon: "/assignments.svg" },
+  { label: "AI Teacher's Toolkit", icon: "/toolkit.svg" },
+  { label: "My Library", icon: "/library.svg" },
+];
+
+export default function Sidebar({
+  activeItem = "Assignments",
+}: SidebarProps) {
+  return (
+    <aside className="fixed bottom-0 left-0 top-0 hidden w-[300px] flex-col border-r border-[#e5e5e5] bg-white px-6 py-7 md:flex">
+      <div className="mb-9 flex items-center gap-3">
+        <Image
+          src="/logo.svg"
+          alt="VedaAI logo"
+          width={80}
+          height={44}
+          className="h-11 w-auto shrink-0"
+          priority
+        />
+        <span className="text-[26px] font-semibold tracking-[-0.03em] text-[#303030]">
+          VedaAI
+        </span>
+      </div>
+
+      <button className="mb-8 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1c1c1e] px-5 text-[15px] font-medium text-white hover:bg-black transition-colors">
+        <Image src="/stars.svg" alt="" width={16} height={16} />
+        <span>Create Assignment</span>
+      </button>
+
+      <nav className="flex flex-col gap-1.5">
+        {navItems.map(({ label, icon }) => {
+          const isActive = label === activeItem;
+
+          return (
+            <div
+              key={label}
+              className={[
+                "flex cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-[15px] transition-colors",
+                isActive
+                  ? "font-medium text-[#303030]"
+                  : "text-[#8c8c8c] hover:text-[#303030]",
+              ].join(" ")}
+            >
+              <Image src={icon} alt="" width={16} height={16} />
+              <span>{label}</span>
+              {label === "My Library" ? (
+                <span className="ml-auto rounded-full bg-[#ff5623] px-2.5 py-0.5 text-[11px] font-semibold text-white">
+                  32
+                </span>
+              ) : null}
+            </div>
+          );
+        })}
+      </nav>
+
+      <div className="flex-1" />
+
+      <div className="flex cursor-pointer items-center gap-3 px-4 py-3 text-[15px] text-[#8c8c8c] hover:text-[#303030]">
+        <Settings size={16} />
+        <span>Settings</span>
+      </div>
+
+      <div className="mt-4 flex items-center gap-3 rounded-[24px] bg-[#f5f5f5] p-3.5">
+        <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[#ececec]">
+          <Image
+            src="/avatar_2.jpeg"
+            alt="School Profile"
+            fill
+            className="object-cover"
+            unoptimized
+          />
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-[#303030]">
+            Delhi Public School
+          </p>
+          <p className="truncate text-xs text-[#a9a9a9]">Bokaro Steel City</p>
+        </div>
+      </div>
+    </aside>
+  );
+}
