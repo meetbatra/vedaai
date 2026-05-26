@@ -21,10 +21,10 @@ export default function TopBar({ breadcrumb = "Assignment" }: TopBarProps) {
             type="button"
             className="relative flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-50 transition-colors"
           >
-            <Image src="/bell.svg" alt="Notifications" width={18} height={18} />
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#ff5623]" />
+            <Image src="/bell.svg" alt="Notifications" width={24} height={24} />
+            {/* <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#ff5623]" /> */}
           </button>
-          
+
           <div className="flex items-center gap-3 rounded-full bg-transparent px-1 cursor-pointer">
             <div className="relative h-8 w-8 overflow-hidden rounded-full bg-gray-300">
               <Image
