@@ -9,8 +9,8 @@ type TopBarProps = {
 
 export default function TopBar({ breadcrumb = "Assignment" }: TopBarProps) {
   return (
-    <div className="sticky top-0 z-40 bg-white border-b border-[#e5e5e5]">
-      <header className="flex h-16 w-full items-center justify-between px-8">
+    <div className="sticky top-3 z-40 m-3">
+      <header className="flex h-14 w-full items-center justify-between rounded-2xl bg-white/80 backdrop-blur-md px-6 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)]">
         <div className="flex items-center gap-3">
           <ArrowLeft size={20} className="cursor-pointer text-[#303030] hover:opacity-75 transition-opacity" />
           <span className="text-base font-semibold text-[#8c8c8c]">{breadcrumb}</span>

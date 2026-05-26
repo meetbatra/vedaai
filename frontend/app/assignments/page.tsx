@@ -12,6 +12,8 @@ import AssignmentCard from "@/components/assignments/AssignmentCard";
 import EmptyState from "@/components/assignments/EmptyState";
 import Sidebar from "@/components/layout/Sidebar";
 import TopBar from "@/components/layout/TopBar";
+import MobileTopBar from "@/components/layout/MobileTopBar";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
 
 type AssignmentItem = {
   id: string;
@@ -33,40 +35,7 @@ export default function AssignmentsPage() {
           <TopBar breadcrumb="Assignment" />
         </div>
 
-        <header className="z-40 px-[10px] pt-3 md:hidden">
-          <div className="flex h-14 items-center rounded-2xl bg-white px-3">
-            <Image
-              src="/mobile_logo.svg"
-              alt="VedaAI logo"
-              width={28}
-              height={28}
-              className="h-7 w-7 shrink-0"
-              unoptimized
-              priority
-            />
-            <span className="ml-2 text-[19px] font-semibold tracking-[-0.03em] text-[#303030]">
-              VedaAI
-            </span>
-
-            <div className="ml-auto flex items-center gap-3">
-              <Image
-                src="/bell.svg"
-                alt="Notifications"
-                width={36}
-                height={36}
-                className="h-9 w-9"
-                unoptimized
-              />
-              <div className="h-8 w-8 rounded-full bg-[#f6f6f6]" />
-              <button
-                aria-label="Open menu"
-                className="flex h-8 w-8 items-center justify-center"
-              >
-                <Menu size={18} className="text-[#1d1b20]" />
-              </button>
-            </div>
-          </div>
-        </header>
+        <MobileTopBar />
 
         <main
           className={[
@@ -125,48 +94,7 @@ export default function AssignmentsPage() {
           </button>
         ) : null}
 
-        <div className="fixed bottom-6 left-1/2 z-50 flex h-[72px] w-[calc(100%-20px)] max-w-[373px] -translate-x-1/2 items-center justify-around rounded-3xl bg-[#181818] shadow-[0_32px_24px_rgba(0,0,0,0.2),0_16px_24px_rgba(0,0,0,0.12)] md:hidden">
-          <div className="flex flex-col items-center gap-1 text-[11px]">
-            <Image
-              src="/mobile_home.svg"
-              alt="Home"
-              width={18}
-              height={18}
-              unoptimized
-            />
-            <span className="text-white/25">Home</span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-[11px]">
-            <Image
-              src="/mobile_assignments.svg"
-              alt="Assignments"
-              width={20}
-              height={20}
-              unoptimized
-            />
-            <span className="text-white">Assignments</span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-[11px]">
-            <Image
-              src="/mobile_library.svg"
-              alt="Library"
-              width={20}
-              height={20}
-              unoptimized
-            />
-            <span className="text-white/25">Library</span>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-[11px]">
-            <Image
-              src="/mobile_toolkit.svg"
-              alt="AI Toolkit"
-              width={20}
-              height={20}
-              unoptimized
-            />
-            <span className="text-white/25">AI Toolkit</span>
-          </div>
-        </div>
+        <MobileBottomNav />
 
         <button className="fixed bottom-[109px] right-[10px] z-50 flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#ff5623] shadow-[0_32px_24px_rgba(0,0,0,0.2),0_16px_24px_rgba(0,0,0,0.12)] md:hidden">
           <Plus size={24} strokeWidth={2.2} />
