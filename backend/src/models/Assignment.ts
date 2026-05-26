@@ -7,6 +7,10 @@ type QuestionTypeInput = {
 };
 
 export interface IAssignment extends Document {
+  subject: string;
+  grade: string;
+  className: string;
+  timeAllowed: string;
   dueDate: string;
   questionTypes: QuestionTypeInput[];
   additionalInfo?: string;
@@ -29,6 +33,10 @@ const QuestionTypeSchema = new Schema<QuestionTypeInput>(
 
 const AssignmentSchema = new Schema<IAssignment>(
   {
+    subject: { type: String, required: true, trim: true },
+    grade: { type: String, required: true, trim: true },
+    className: { type: String, required: true, trim: true },
+    timeAllowed: { type: String, required: true, trim: true },
     dueDate: { type: String, required: true, trim: true },
     questionTypes: {
       type: [QuestionTypeSchema],

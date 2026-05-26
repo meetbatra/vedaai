@@ -19,7 +19,7 @@ export default function Sidebar({
   activeItem = "Assignments",
 }: SidebarProps) {
   return (
-    <aside className="fixed bottom-0 left-0 top-0 hidden w-[300px] flex-col border-r border-[#e5e5e5] bg-white px-6 py-7 md:flex">
+    <aside className="fixed bottom-3 left-3 top-3 hidden w-[304px] flex-col rounded-2xl bg-white px-6 py-7 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)] md:flex z-50">
       <div className="mb-9 flex items-center gap-3">
         <Image
           src="/logo.svg"

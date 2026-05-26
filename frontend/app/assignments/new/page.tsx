@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
-  Bell,
-  Menu,
   Mic,
   Plus,
   UploadCloud,
@@ -17,6 +15,8 @@ import QuestionTypeRow from "@/components/assignments/QuestionTypeRow";
 import StepOneForm from "@/components/assignments/StepOneForm";
 import Sidebar from "@/components/layout/Sidebar";
 import TopBar from "@/components/layout/TopBar";
+import MobileTopBar from "@/components/layout/MobileTopBar";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -32,6 +32,7 @@ type QuestionType = {
 export default function NewAssignmentPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [subject, setSubject] = useState("");
   const [grade, setGrade] = useState("");
   const [className, setClassName] = useState("");
@@ -125,7 +126,7 @@ export default function NewAssignmentPage() {
     setCurrentStep(1);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 1) {
       if (
         !subject.trim() ||
@@ -140,6 +141,46 @@ export default function NewAssignmentPage() {
       setCurrentStep(2);
       return;
     }
+
+    if (!dueDate) {
+      alert("Please select a due date.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      
+      const payload = {
+        subject,
+        grade,
+        className,
+        timeAllowed,
+        dueDate: dueDate.toISOString(),
+        questionTypes,
+        additionalInfo,
+      };
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/assignments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to create assignment");
+      }
+
+      const data = await response.json();
+      router.push(`/assignments/${data.assignmentId}`);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to submit assignment. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -147,7 +188,7 @@ export default function NewAssignmentPage() {
       <div className="hidden h-screen overflow-hidden bg-[#eeeeee] md:flex">
         <Sidebar activeItem="Assignments" />
 
-        <div className="flex min-w-0 flex-1 flex-col md:ml-[300px]">
+        <div className="flex min-w-0 flex-1 flex-col md:ml-[316px]">
           <div className="hidden md:block">
             <TopBar breadcrumb="Assignment" />
           </div>
@@ -359,9 +400,10 @@ export default function NewAssignmentPage() {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="flex h-[46px] items-center gap-2 rounded-full border border-white/20 bg-[#181818] px-6 text-sm font-medium text-white"
+                  disabled={isSubmitting}
+                  className="flex h-[46px] items-center gap-2 rounded-full border border-white/20 bg-[#181818] px-6 text-sm font-medium text-white disabled:opacity-50"
                 >
-                  <span>Next</span>
+                  <span>{isSubmitting ? "Generating..." : "Next"}</span>
                   <ArrowRight size={16} />
                 </button>
               </div>
@@ -373,37 +415,7 @@ export default function NewAssignmentPage() {
       <div className="md:hidden">
         <div className="min-h-screen bg-[#CECECE] pb-28">
 
-          <div className="px-2.5 pt-3">
-            <div className="flex h-14 items-center justify-between rounded-2xl bg-white px-3">
-              <div className="flex items-center">
-                <Image
-                  src="/mobile_logo.svg"
-                  alt="VedaAI logo"
-                  width={28}
-                  height={28}
-                  className="h-7 w-7 shrink-0"
-                  unoptimized
-                  priority
-                />
-                <span className="ml-2 text-[19px] font-semibold tracking-[-0.03em] text-[#303030]">
-                  VedaAI
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-[#F6F6F6]">
-                  <Bell size={18} className="text-[#303030]" />
-                  <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#FF5623]" />
-                </div>
-                <div className="h-8 w-8 overflow-hidden rounded-full bg-gray-300" />
-                <button
-                  type="button"
-                  className="flex h-8 w-8 items-center justify-center rounded-full"
-                >
-                  <Menu size={20} className="text-[#1D1B20]" />
-                </button>
-              </div>
-            </div>
-          </div>
+          <MobileTopBar />
 
           <main className="px-[22px] pb-8 pt-4">
             <div className="mb-5 flex items-center gap-4">
@@ -593,38 +605,17 @@ export default function NewAssignmentPage() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex h-[46px] w-[106px] items-center justify-center gap-2 rounded-full bg-[#181818] text-sm font-medium text-white shadow-[0_16px_24px_rgba(0,0,0,0.12),0_32px_24px_rgba(0,0,0,0.2)]"
+                disabled={isSubmitting}
+                className="flex h-[46px] w-[130px] items-center justify-center gap-2 rounded-full bg-[#181818] text-sm font-medium text-white shadow-[0_16px_24px_rgba(0,0,0,0.12),0_32px_24px_rgba(0,0,0,0.2)] disabled:opacity-50"
               >
-                <span>Next</span>
+                <span>{isSubmitting ? "Generating..." : "Next"}</span>
                 <ArrowRight size={16} />
               </button>
             </div>
           </main>
         </div>
 
-        <div className="pointer-events-none fixed bottom-2 left-0 right-0 z-50 px-2.5">
-          <div className="pointer-events-auto h-[72px] rounded-[24px] bg-[#181818] px-4 shadow-[0_16px_24px_rgba(0,0,0,0.12),0_32px_24px_rgba(0,0,0,0.2)]">
-            <div className="flex h-full items-center justify-between">
-              <button type="button" className="flex flex-col items-center gap-1">
-                <Image src="/mobile_home.svg" alt="Home" width={20} height={20} />
-                <span className="text-[10px] text-white/40">Home</span>
-              </button>
-              <button type="button" className="flex flex-col items-center gap-1">
-                <Image src="/mobile_assignments.svg" alt="Assignments" width={22} height={22} />
-                <span className="text-[10px] text-white">Assignments</span>
-              </button>
-              <button type="button" className="flex flex-col items-center gap-1">
-                <Image src="/mobile_library.svg" alt="Library" width={20} height={20} />
-                <span className="text-[10px] text-white/40">Library</span>
-              </button>
-              <button type="button" className="flex flex-col items-center gap-1">
-                <Image src="/mobile_toolkit.svg" alt="AI Toolkit" width={20} height={20} />
-                <span className="text-[10px] text-white/40">AI Toolkit</span>
-              </button>
-            </div>
-          </div>
-          <div className="mx-auto mt-2 h-[5px] w-32 rounded-full bg-[#303030]/50" />
-        </div>
+        <MobileBottomNav />
       </div>
     </>
   );
