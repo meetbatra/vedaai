@@ -34,10 +34,18 @@ export default function Sidebar({
         </span>
       </div>
 
-      <button className="mb-8 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1c1c1e] px-5 text-[15px] font-medium text-white hover:bg-black transition-colors">
-        <Image src="/stars.svg" alt="" width={16} height={16} />
-        <span>Create Assignment</span>
-      </button>
+      {/* Gradient border ring around Create Assignment — from SVG paint3_linear: #FF7950 → #C0350A */}
+      <div
+        className="mb-8 rounded-full p-[3px]"
+        style={{
+          background: "linear-gradient(to bottom, #FF7950, #C0350A)",
+        }}
+      >
+        <button className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1c1c1e] px-5 text-[15px] font-medium text-white hover:bg-[#2a2a2a] transition-colors">
+          <Image src="/stars.svg" alt="" width={16} height={16} />
+          <span>Create Assignment</span>
+        </button>
+      </div>
 
       <nav className="flex flex-col gap-1.5">
         {navItems.map(({ label, icon }) => {

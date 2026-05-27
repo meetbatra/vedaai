@@ -12,6 +12,8 @@ export default function QuestionPaper({ assignment }: QuestionPaperProps) {
   const school = result.school || "Delhi Public School, Sector-4, Bokaro"
   const subject = result.subject || assignment.subject
   const className = result.className || assignment.className
+  const gradeVal = result.grade || assignment.grade || ""
+  const displayGrade = gradeVal.toLowerCase().startsWith("grade") ? gradeVal : `Grade ${gradeVal}`
   const timeAllowed = result.timeAllowed || assignment.timeAllowed
   const totalMarks = result.totalMarks || assignment.questionTypes?.reduce((acc, qt) => acc + (qt.questionCount * qt.marks), 0) || 0
 
@@ -24,7 +26,7 @@ export default function QuestionPaper({ assignment }: QuestionPaperProps) {
       <div className="text-center">
         <h1 className="text-2xl font-bold">{school}</h1>
         <div className="text-lg font-semibold mt-1">Subject: {subject}</div>
-        <div className="text-lg font-semibold">Class: {className}</div>
+        <div className="text-lg font-semibold">{displayGrade} - Section {className}</div>
       </div>
 
       <div className="border-t border-black/10 my-6" />
@@ -44,7 +46,7 @@ export default function QuestionPaper({ assignment }: QuestionPaperProps) {
       <div className="flex flex-col gap-4 mb-10">
         <div className="text-[15px]">Name: ___________________</div>
         <div className="text-[15px]">Roll Number: _______________</div>
-        <div className="text-[15px]">Class: {className} Section: ________</div>
+        <div className="text-[15px]">Class: {displayGrade} Section: {className}</div>
       </div>
 
       {/* SECTIONS */}
