@@ -20,9 +20,8 @@ const queueEvents = new QueueEvents("assignments", {
 });
 const io = new Server(httpServer, {
   cors: {
-    origin: FRONTEND_URL,
+    origin: "*",
     methods: ["GET", "POST"],
-    credentials: true,
   },
 });
 
@@ -105,16 +104,9 @@ queueEvents.on("failed", async ({ jobId, failedReason }) => {
   }
 });
 
-const corsOptions = {
-  origin: FRONTEND_URL,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
-// Explicitly handle preflight OPTIONS requests for all routes
-app.options("*", cors(corsOptions));
+// Allow all origins — can be tightened to FRONTEND_URL once confirmed working
+app.use(cors());
+app.options("*", cors());
 app.use(express.json());
 
 app.use("/api", router);
