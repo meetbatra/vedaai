@@ -20,7 +20,59 @@ Veda AI is an intelligent, AI-powered platform for educators and students to ins
 - **AI Integration:** OpenAI API (gpt-4o) via Vercel AI SDK
 - **Deployment:** Vercel (Frontend), Heroku (Backend - Web & Worker Dynos)
 
+## Our Approach
+
+Building Veda AI required combining several modern technologies to handle heavy computational tasks without blocking the user interface. Here is how we approached the key challenges:
+
+1. **Handling Long-Running AI Requests:**
+   Generating complex assignments with OpenAI takes time. Instead of keeping the HTTP request open and risking timeouts, we adopted an **asynchronous event-driven pattern**. When a user submits a form, the backend immediately responds with an assignment ID while queuing a background job via **BullMQ**.
+2. **Context-Aware Generation:**
+   To allow users to base their assignments on existing materials, we integrated the `unpdf` library. When a user uploads a PDF, the backend extracts the text and injects it directly into the system prompt built for the AI, giving the model precise context for the generated questions.
+3. **Real-Time Feedback:**
+   Since the generation happens in the background, the UI needs a way to know when it's done. We implemented **Socket.io** to establish a persistent WebSocket connection between the frontend and backend. As soon as the BullMQ worker completes the job, it signals the Express server via a Redis `QueueEvents` listener, which immediately broadcasts a completion event to the connected client.
+4. **Resilient Production Deployment:**
+   The application is separated into a frontend deployed on **Vercel** and a backend deployed on **Heroku**. The backend is further split into two distinct processes: a `web` dyno handling HTTP/WebSocket traffic and a `worker` dyno dedicated to processing AI jobs. This separation of concerns ensures that heavy AI processing does not degrade the performance of the web server.
+
 ## Architecture
+
+### System Flow Diagram
+
+```mermaid
+graph TD
+    subgraph Frontend ["Next.js App (Vercel)"]
+        UI["User Interface"]
+        SocketClient["Socket.io Client"]
+    end
+
+    subgraph Backend ["Express API (Heroku - Web Dyno)"]
+        API["Express Router"]
+        SocketServer["Socket.io Server"]
+        UploadRoute["PDF Extractor (unpdf)"]
+    end
+
+    subgraph Worker ["BullMQ (Heroku - Worker Dyno)"]
+        JobProcessor["Background Job Processor"]
+    end
+
+    subgraph Services ["External Services"]
+        MongoDB[("MongoDB Atlas")]
+        Redis[("Upstash Redis")]
+        OpenAI["OpenAI API"]
+    end
+
+    UI -->|"1. Submit Form & PDF"| API
+    API -->|"2. Extract Text"| UploadRoute
+    API -->|"3. Save Pending State"| MongoDB
+    API -->|"4. Add Job to Queue"| Redis
+    Redis -->|"5. Pick up Job"| JobProcessor
+    JobProcessor -->|"6. Generate Assignment"| OpenAI
+    OpenAI -->|"7. Return JSON Result"| JobProcessor
+    JobProcessor -->|"8. Update State"| MongoDB
+    JobProcessor -->|"9. Mark Job Completed"| Redis
+    Redis -->|"10. Receive Queue Event"| SocketServer
+    SocketServer -->|"11. Broadcast Update"| SocketClient
+    SocketClient -->|"12. Fetch Final Result"| API
+```
 
 ### Directory Structure
 
