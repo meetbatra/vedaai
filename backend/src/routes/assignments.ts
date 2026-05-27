@@ -1,6 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-import puppeteer, { Browser } from "puppeteer";
+import type { Browser } from "puppeteer";
 import Assignment from "../models/Assignment";
 import { assignmentQueue } from "../lib/queue";
 
@@ -463,6 +463,7 @@ router.get("/:id/pdf", async (req, res) => {
       answerKey: Array.isArray(result.answerKey) ? result.answerKey : [],
     });
 
+    const puppeteer = (await import("puppeteer")).default;
     browser = await puppeteer.launch({
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
