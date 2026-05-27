@@ -80,6 +80,7 @@ queueEvents.on("completed", async ({ jobId }) => {
   try {
     const assignment = await Assignment.findOne({ jobId: String(jobId) });
     if (!assignment) return;
+    console.log(`[QueueEvents] Assignment ${assignment._id} completed, broadcasting to sockets`);
     io.emit("assignment:completed", {
       assignmentId: assignment._id.toString(),
       status: "completed",

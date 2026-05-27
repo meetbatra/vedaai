@@ -14,6 +14,7 @@ const getSocketSingleton = (): Socket => {
 
     socketSingleton = io(socketUrl, {
       autoConnect: true,
+      transports: ["websocket"],
     });
   }
 
