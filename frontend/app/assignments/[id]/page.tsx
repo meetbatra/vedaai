@@ -125,7 +125,10 @@ export default function AssignmentOutputPage() {
         <>
           <div className="bg-[#1a1a1a] text-white rounded-[24px] p-5 flex flex-col gap-4">
             <p className="text-[15px] font-medium leading-relaxed">
-              Certainly, Lakshya! Here are customized Question Paper for your {assignment.grade || assignment.result.grade} {assignment.subject || assignment.result.subject} classes on the NCERT chapters:
+              Certainly, John! Here are customized Question Paper for your {(() => {
+                const g = assignment.grade || assignment?.result?.grade || "";
+                return g.toLowerCase().startsWith("grade") ? g : `Grade ${g}`;
+              })()} {assignment.subject || assignment?.result?.subject} classes on the NCERT chapters:
             </p>
             <div className="flex">
               <button

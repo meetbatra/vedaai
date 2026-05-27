@@ -30,7 +30,7 @@ export function buildQuestionPaperPrompt(data: PromptBuilderInput): string {
 
 Generate a complete question paper with the following details:
 - Subject: ${data.subject}
-- Grade/Class: ${data.grade}
+- Grade/Class: Grade ${data.grade}
 - Section: ${data.className}
 - Time Allowed: ${data.timeAllowed} minutes
 - Total Marks: ${totalMarks}
@@ -79,6 +79,6 @@ Rules:
 - difficulty must be exactly one of: "Easy", "Moderate", "Challenging"
 - Generate exactly the number of questions specified for each section
 - answerKey must have one entry per question across all sections, numbered sequentially
-- All questions must be relevant to ${data.subject} for ${data.grade} students
+- All questions must be relevant to ${data.subject} for Grade ${data.grade} students
 - Do not include any text outside the JSON object`;
 }

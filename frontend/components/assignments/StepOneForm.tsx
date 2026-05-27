@@ -21,18 +21,18 @@ type StepOneFormProps = {
 };
 
 const GRADES = [
-  "Grade 1",
-  "Grade 2",
-  "Grade 3",
-  "Grade 4",
-  "Grade 5",
-  "Grade 6",
-  "Grade 7",
-  "Grade 8",
-  "Grade 9",
-  "Grade 10",
-  "Grade 11",
-  "Grade 12",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "11",
+  "12",
 ];
 
 const SECTIONS = ["A", "B", "C", "D"];
@@ -89,7 +89,9 @@ export default function StepOneForm({
             </label>
             <Select value={grade} onValueChange={onGradeChange}>
               <SelectTrigger className="!h-12 w-full rounded-2xl border border-[#dadada] !bg-white px-4 text-sm text-[#303030] shadow-none outline-none focus:border-[#1a1a1a] focus:ring-0 focus-visible:ring-0 [&>span]:line-clamp-1">
-                <SelectValue placeholder="Select Grade" />
+                <span className="truncate">
+                  {grade ? `Grade ${grade}` : "Select Grade"}
+                </span>
               </SelectTrigger>
               <SelectContent className="border-[#dadada] bg-white max-h-[200px] overflow-y-auto">
                 {GRADES.map((g) => (
@@ -103,7 +105,7 @@ export default function StepOneForm({
 
           <div>
             <label className="mb-2 block text-sm font-semibold text-[#303030]">
-              Class / Section
+              Section
             </label>
             <Select value={className} onValueChange={onClassNameChange}>
               <SelectTrigger className="!h-12 w-full rounded-2xl border border-[#dadada] !bg-white px-4 text-sm text-[#303030] shadow-none outline-none focus:border-[#1a1a1a] focus:ring-0 focus-visible:ring-0 [&>span]:line-clamp-1">
