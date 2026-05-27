@@ -1,7 +1,5 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
 import multer from "multer";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require("pdf-parse") as (buffer: Buffer) => Promise<{ text: string }>;
 
 const router = Router();
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -39,13 +37,15 @@ router.post("/", upload.single("file"), async (req: Request, res: Response) => {
     let extractedText = "";
 
     if (isPdf) {
-      // pdf-parse default export is a function: pdfParse(buffer) => Promise<{ text: string }>
-      const parsed = await pdfParse(file.buffer);
-      extractedText = parsed.text || "";
+      // unpdf is ESM-only — use dynamic import to avoid CJS/ESM conflict
+      const { extractText } = await import("unpdf");
+      const uint8 = new Uint8Array(file.buffer);
+      const { text } = await extractText(uint8, { mergePages: true });
+      extractedText = text ?? "";
     } else if (isTxt) {
       extractedText = file.buffer.toString("utf-8");
     }
-    // For images: extractedText stays "" — the frontend currently doesn't use OCR for images
+    // Images: no text extraction — return empty string
 
     return res.status(200).json({ success: true, extractedText });
   } catch (error) {
