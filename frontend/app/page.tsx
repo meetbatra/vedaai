@@ -56,7 +56,7 @@ export default function Home() {
               {/* Feature Card 3 */}
               <div className="bg-white p-6 rounded-2xl border border-black/[0.08] shadow-[0px_4px_20px_0px_rgba(0,0,0,0.02)] flex flex-col items-start md:col-span-2">
                 <div className="w-10 h-10 rounded-xl bg-[#f5f5f5] flex items-center justify-center mb-5">
-                  <Image src="/toolkit.svg" alt="Feedback" width={20} height={20} className="opacity-70" />
+                  <Image src="/icons-desktop/toolkit.svg" alt="Feedback" width={20} height={20} className="opacity-70" />
                 </div>
                 <h3 className="text-lg font-semibold text-[#303030] mb-2">Automated Grading</h3>
                 <p className="text-[#6f6f6f] text-sm leading-relaxed max-w-2xl">

@@ -49,34 +49,87 @@ export default function NewAssignmentPage() {
   ]);
   const [additionalInfo, setAdditionalInfo] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [extractedFileText, setExtractedFileText] = useState("");
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
-  const [fileError, setFileError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleFileSelect = (file: File | null) => {
+  const handleFileSelect = async (file: File | null) => {
     if (!file) {
       setUploadedFile(null);
-      setFileError(null);
+      setExtractedFileText("");
+      setUploadError(null);
       return;
     }
 
-    const allowedTypes = ["image/jpeg", "image/png"];
+    setUploadLoading(true);
+    setUploadError(null);
+
+    const allowedTypes = ["application/pdf", "text/plain"];
+    const allowedExtensions = [".pdf", ".txt"];
+    const fileName = file.name.toLowerCase();
+    const extensionIndex = fileName.lastIndexOf(".");
+    const fileExtension = extensionIndex >= 0 ? fileName.slice(extensionIndex) : "";
     const maxFileSize = 10 * 1024 * 1024;
 
-    if (!allowedTypes.includes(file.type)) {
+    if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
       setUploadedFile(null);
-      setFileError("Only JPEG and PNG files are allowed.");
+      setExtractedFileText("");
+      setUploadError("Only PDF or TXT files are allowed.");
+      setUploadLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
       return;
     }
 
     if (file.size > maxFileSize) {
       setUploadedFile(null);
-      setFileError("File size must be 10MB or less.");
+      setExtractedFileText("");
+      setUploadError("File size must be 10MB or less.");
+      setUploadLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
       return;
     }
 
-    setUploadedFile(file);
-    setFileError(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = (await response.json().catch(() => ({}))) as {
+        extractedText?: unknown;
+        error?: unknown;
+      };
+
+      if (!response.ok) {
+        const message = typeof data.error === "string" ? data.error : "Failed to extract text from file";
+        throw new Error(message);
+      }
+
+      if (typeof data.extractedText !== "string") {
+        throw new Error("Invalid response from server");
+      }
+
+      setExtractedFileText(data.extractedText);
+      setUploadedFile(file);
+    } catch (error) {
+      console.error(error);
+      setUploadedFile(null);
+      setExtractedFileText("");
+      setUploadError(error instanceof Error ? error.message : "Failed to extract text from file");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } finally {
+      setUploadLoading(false);
+    }
   };
 
   const totalQuestions = questionTypes.reduce(
@@ -159,6 +212,7 @@ export default function NewAssignmentPage() {
         dueDate: dueDate.toISOString(),
         questionTypes,
         additionalInfo,
+        extractedFileText,
         ...(uploadedFile ? { fileUrl: uploadedFile.name } : {}),
       };
 
@@ -283,7 +337,10 @@ export default function NewAssignmentPage() {
                       <p className="text-sm font-medium text-[#5e5e5e]">
                         Choose a file or drag &amp; drop it here
                       </p>
-                      <p className="text-xs text-[#a9a9a9]">JPEG, PNG, upto 10MB</p>
+                      <p className="text-xs text-[#a9a9a9]">PDF or TXT, upto 10MB</p>
+                      {uploadLoading ? (
+                        <p className="text-xs text-[#a9a9a9]">Extracting text...</p>
+                      ) : null}
                       <button
                         type="button"
                         className="rounded-full border border-[#d0d0d0] bg-white px-4 py-1.5 text-xs font-medium text-[#5e5e5e]"
@@ -297,16 +354,16 @@ export default function NewAssignmentPage() {
                       <input
                         ref={fileInputRef}
                         type="file"
-                        accept=".jpg,.jpeg,.png"
+                        accept=".pdf,.txt"
                         className="hidden"
                         onChange={(event) => handleFileSelect(event.target.files?.[0] || null)}
                       />
                       {uploadedFile ? <p className="text-xs text-green-600">{uploadedFile.name}</p> : null}
-                      {fileError ? <p className="text-xs text-red-500">{fileError}</p> : null}
+                      {uploadError ? <p className="text-xs text-red-500">{uploadError}</p> : null}
                     </div>
 
                     <p className="mb-6 text-center text-xs text-[#a9a9a9]">
-                      Upload images of your preferred document/image
+                      Upload documents from your preferred material
                     </p>
 
                     <div>
@@ -499,7 +556,10 @@ export default function NewAssignmentPage() {
                       <UploadCloud size={22} className="text-[#2B2B2B]" />
                     </div>
                     <p className="text-sm font-medium text-[#303030]">Choose a file or drag &amp; drop it here</p>
-                    <p className="text-xs text-[#5E5E5E]">JPEG, PNG, upto 10MB</p>
+                    <p className="text-xs text-[#5E5E5E]">PDF or TXT, upto 10MB</p>
+                    {uploadLoading ? (
+                      <p className="text-xs text-[#5E5E5E]">Extracting text...</p>
+                    ) : null}
                     <button
                       type="button"
                       className="rounded-full border border-[#E5E5E5] bg-white px-4 py-1.5 text-xs font-medium text-[#2B2B2B]"
@@ -513,16 +573,16 @@ export default function NewAssignmentPage() {
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept=".jpg,.jpeg,.png"
+                      accept=".pdf,.txt"
                       className="hidden"
                       onChange={(event) => handleFileSelect(event.target.files?.[0] || null)}
                     />
                     {uploadedFile ? <p className="text-xs text-green-600">{uploadedFile.name}</p> : null}
-                    {fileError ? <p className="text-xs text-red-500">{fileError}</p> : null}
+                    {uploadError ? <p className="text-xs text-red-500">{uploadError}</p> : null}
                   </div>
 
                   <p className="mb-6 mt-3 text-center text-xs text-[#5E5E5E]">
-                    Upload images of your preferred document/image
+                    Upload documents from your preferred material
                   </p>
 
                   <div>

@@ -196,7 +196,7 @@ export default function AssignmentOutputPage() {
                 ) : (
                   <>
                     <span className="hidden md:flex items-center gap-2">
-                      <Image src="/download.svg" alt="Download" width={16} height={16} /> Download as PDF
+                      <Image src="/icons-desktop/download.svg" alt="Download" width={16} height={16} /> Download as PDF
                     </span>
                     <span className="flex md:hidden items-center justify-center">
                       <Download size={18} />

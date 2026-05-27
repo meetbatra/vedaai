@@ -9,7 +9,7 @@ export default function MobileTopBar() {
       <div className="flex h-14 items-center justify-between rounded-2xl bg-white px-3">
         <div className="flex items-center">
           <Image
-            src="/mobile_logo.svg"
+            src="/icons-mobile/logo.svg"
             alt="VedaAI logo"
             width={28}
             height={28}

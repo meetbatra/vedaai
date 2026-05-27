@@ -11,6 +11,7 @@ type PromptBuilderInput = {
   timeAllowed: string;
   questionTypes: QuestionTypeInput[];
   additionalInfo?: string;
+  extractedFileText?: string;
 };
 
 export function buildQuestionPaperPrompt(data: PromptBuilderInput): string {
@@ -25,6 +26,7 @@ export function buildQuestionPaperPrompt(data: PromptBuilderInput): string {
     (sum, qt) => sum + qt.questionCount * qt.marks,
     0,
   );
+  const extractedFileText = data.extractedFileText?.trim();
 
   return `You are an expert teacher creating a question paper.
 
@@ -38,6 +40,8 @@ Generate a complete question paper with the following details:
 
 Sections required:
 ${sectionList}
+
+${extractedFileText ? `Source material (primary reference):\n${extractedFileText}\n\nIf source material is provided, you MUST derive questions directly from it. Do not generate generic questions. The material above is the primary source for all questions. Do not use outside knowledge. Reuse the terminology, definitions, and examples from the material verbatim where possible. If the material includes numerical examples, you MUST include at least one question that uses those numbers or formulas.` : ""}
 
 ${data.additionalInfo ? `Additional Instructions: ${data.additionalInfo}` : ""}
 

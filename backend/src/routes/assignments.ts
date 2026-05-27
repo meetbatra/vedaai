@@ -276,6 +276,7 @@ router.post("/", async (req, res) => {
       questionTypes,
       additionalInfo,
       fileUrl,
+      extractedFileText,
     }: {
       subject?: unknown;
       grade?: unknown;
@@ -285,6 +286,7 @@ router.post("/", async (req, res) => {
       questionTypes?: unknown;
       additionalInfo?: unknown;
       fileUrl?: unknown;
+      extractedFileText?: unknown;
     } = req.body;
 
     if (!subject || !grade || !className || !timeAllowed || !dueDate || !questionTypes) {
@@ -320,6 +322,8 @@ router.post("/", async (req, res) => {
       questionTypes,
       additionalInfo: typeof additionalInfo === "string" ? additionalInfo : undefined,
       fileUrl: typeof fileUrl === "string" ? fileUrl : undefined,
+      extractedFileText:
+        typeof extractedFileText === "string" ? extractedFileText : undefined,
       status: "pending",
     });
 
@@ -337,6 +341,8 @@ router.post("/", async (req, res) => {
         questionTypes,
         additionalInfo: typeof additionalInfo === "string" ? additionalInfo : undefined,
         fileUrl: typeof fileUrl === "string" ? fileUrl : undefined,
+        extractedFileText:
+          typeof extractedFileText === "string" ? extractedFileText : undefined,
       },
       {
         attempts: 3,
