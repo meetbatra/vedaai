@@ -4,10 +4,10 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
-  { label: "Home", icon: "/mobile_home.svg", href: "/" },
-  { label: "Assignments", icon: "/mobile_assignments.svg", href: "/assignments" },
-  { label: "Library", icon: "/mobile_library.svg", href: "/library" },
-  { label: "AI Toolkit", icon: "/mobile_toolkit.svg", href: "/toolkit" },
+  { label: "Home", icon: "/icons-mobile/home.svg", href: "/" },
+  { label: "Assignments", icon: "/icons-mobile/assignments.svg", href: "/assignments" },
+  { label: "Library", icon: "/icons-mobile/library.svg", href: "/library" },
+  { label: "AI Toolkit", icon: "/icons-mobile/toolkit.svg", href: "/toolkit" },
 ];
 
 export default function MobileBottomNav() {

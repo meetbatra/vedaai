@@ -23,6 +23,7 @@ type AssignmentJobData = {
   timeAllowed: string;
   questionTypes: QuestionTypePayload[];
   additionalInfo?: string;
+  extractedFileText?: string;
 };
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
@@ -38,6 +39,7 @@ const worker = new Worker(
       timeAllowed,
       questionTypes,
       additionalInfo,
+      extractedFileText,
     } = job.data;
 
     const assignment = await Assignment.findById(assignmentId);
@@ -55,6 +57,7 @@ const worker = new Worker(
       timeAllowed,
       questionTypes,
       additionalInfo,
+      extractedFileText,
     });
 
     const response = await openai.chat.completions.create({

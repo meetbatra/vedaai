@@ -9,11 +9,11 @@ type SidebarProps = {
 };
 
 const navItems = [
-  { label: "Home", icon: "/home.svg" },
+  { label: "Home", icon: "/icons-desktop/home.svg" },
   { label: "My Groups", icon: "/groups.svg" },
   { label: "Assignments", icon: "/assignments.svg" },
-  { label: "AI Teacher's Toolkit", icon: "/toolkit.svg" },
-  { label: "My Library", icon: "/library.svg" },
+  { label: "AI Teacher's Toolkit", icon: "/icons-desktop/toolkit.svg" },
+  { label: "My Library", icon: "/icons-desktop/library.svg" },
 ];
 
 export default function Sidebar({
@@ -49,7 +49,7 @@ export default function Sidebar({
           onClick={() => router.push("/assignments/new")}
           className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1c1c1e] px-5 text-[15px] font-medium text-white hover:bg-[#2a2a2a] transition-colors"
         >
-          <Image src="/stars.svg" alt="" width={16} height={16} />
+          <Image src="/icons-desktop/stars.svg" alt="" width={16} height={16} />
           <span>Create Assignment</span>
         </button>
       </div>

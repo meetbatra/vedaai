@@ -15,6 +15,7 @@ export interface IAssignment extends Document {
   questionTypes: QuestionTypeInput[];
   additionalInfo?: string;
   fileUrl?: string;
+  extractedFileText?: string;
   status: "pending" | "processing" | "completed" | "failed";
   jobId?: string;
   result?: unknown;
@@ -48,6 +49,7 @@ const AssignmentSchema = new Schema<IAssignment>(
     },
     additionalInfo: { type: String, required: false, trim: true },
     fileUrl: { type: String, required: false, trim: true },
+    extractedFileText: { type: String, required: false, trim: true },
     status: {
       type: String,
       enum: ["pending", "processing", "completed", "failed"],

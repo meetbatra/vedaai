@@ -17,6 +17,8 @@
   "dependencies": {
     "@ai-sdk/openai": "4.0.0-beta.44",
     "@types/ioredis": "^4.28.10",
+    "@types/multer": "^2.1.0",
+    "@types/pdf-parse": "^1.1.5",
     "@upstash/redis": "latest",
     "ai": "4",
     "bullmq": "5",
@@ -25,7 +27,9 @@
     "express": "5",
     "ioredis": "^5.10.1",
     "mongoose": "8",
+    "multer": "^2.1.1",
     "openai": "^6.39.0",
+    "pdf-parse": "^2.4.5",
     "puppeteer": "latest",
     "socket.io": "4.8.3"
   },
