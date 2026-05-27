@@ -61,6 +61,10 @@ export default function Sidebar({
           return (
             <div
               key={label}
+              onClick={() => {
+                if (label === "Home") router.push("/");
+                if (label === "Assignments") router.push("/assignments");
+              }}
               className={[
                 "flex cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-[15px] transition-colors",
                 isActive
