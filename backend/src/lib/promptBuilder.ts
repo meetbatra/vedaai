@@ -61,6 +61,7 @@ The JSON must follow this exact structure:
         {
           "number": 1,
           "text": "Question text here",
+          "options": ["Option A", "Option B", "Option C", "Option D"],
           "difficulty": "Easy",
           "marks": 2
         }
@@ -76,9 +77,16 @@ The JSON must follow this exact structure:
 }
 
 Rules:
-- difficulty must be exactly one of: "Easy", "Moderate", "Challenging"
+- difficulty must be exactly one of: "Easy", "Moderate", "Challenging". Ensure the questions' difficulty level is strictly appropriate and carefully calibrated for Grade ${data.grade} students. The model should think carefully about age-appropriate complexity.
 - Generate exactly the number of questions specified for each section
+- For each section, the "questionType" field MUST exactly match the requested question type from the "Sections required" list.
+- Tailor the questions to their specific "questionType":
+  * If the type is "Multiple Choice Questions" (or similar MCQ), you MUST include an "options" array with exactly 4 distinct choices in the question object.
+  * If the type involves blanks (e.g., "Fill in the Blanks"), the "text" MUST contain appropriate blank spaces (e.g., "______").
+  * If the type requires diagrams or graphs, phrase the "text" to explicitly ask the student to draw or plot a specific graph/diagram.
+  * If the type is a short answer, frame it as a concise single-statement question.
+  * Do NOT include the "options" array for non-MCQ questions.
 - answerKey must have one entry per question across all sections, numbered sequentially
-- All questions must be relevant to ${data.subject} for Grade ${data.grade} students
-- Do not include any text outside the JSON object`;
+- All questions must be relevant to ${data.subject}. Always provide questions that are exactly according to Grade ${data.grade} standards.
+- Do not include any text outside the JSON object\`;
 }

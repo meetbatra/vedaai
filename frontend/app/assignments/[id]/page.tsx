@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import Sidebar from "@/components/layout/Sidebar"
 import TopBar from "@/components/layout/TopBar"
@@ -10,53 +10,106 @@ import MobileBottomNav from "@/components/layout/MobileBottomNav"
 import QuestionPaper from "@/components/assignments/QuestionPaper"
 import { downloadAssignmentPdf } from "@/lib/generatePdf"
 import { Assignment } from "@/types/assignment"
+import { useSocket } from "@/hooks/useSocket"
 import { Loader2, Download, RefreshCw, ArrowLeft } from "lucide-react"
 
+type AssignmentProcessingEvent = {
+  assignmentId: string
+  status: "processing"
+}
+
+type AssignmentCompletedEvent = {
+  assignmentId: string
+  status: "completed"
+  result: unknown
+}
+
+type AssignmentFailedEvent = {
+  assignmentId: string
+  status: "failed"
+  error: string
+}
+
 export default function AssignmentOutputPage() {
-  const { id } = useParams()
+  const params = useParams<{ id: string }>()
+  const id = Array.isArray(params.id) ? params.id[0] : params.id
   const router = useRouter()
+  const socket = useSocket()
 
   const [assignment, setAssignment] = useState<Assignment | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [downloading, setDownloading] = useState<boolean>(false)
 
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout
-
-    const fetchAssignment = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/assignments/${id}`)
-        if (!res.ok) throw new Error("Failed to fetch")
-        const data = await res.json()
-        setAssignment(data.assignment)
-        setLoading(false)
-        return data.assignment.status
-      } catch (err) {
-        setError("Failed to load assignment")
-        setLoading(false)
-        return "error"
-      }
-    }
-
-    const startPolling = async () => {
-      const status = await fetchAssignment()
-      if (status === "pending" || status === "processing") {
-        intervalId = setInterval(async () => {
-          const newStatus = await fetchAssignment()
-          if (newStatus === "completed" || newStatus === "failed" || newStatus === "error") {
-            clearInterval(intervalId)
-          }
-        }, 3000)
-      }
-    }
-
-    startPolling()
-
-    return () => {
-      if (intervalId) clearInterval(intervalId)
+  const fetchAssignment = useCallback(async () => {
+    if (!id) return
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/assignments/${id}`)
+      if (!res.ok) throw new Error("Failed to fetch")
+      const data = await res.json()
+      setAssignment(data.assignment)
+      setError(null)
+    } catch {
+      setError("Failed to load assignment")
+    } finally {
+      setLoading(false)
     }
   }, [id])
+
+  useEffect(() => {
+    void fetchAssignment()
+  }, [fetchAssignment])
+
+  useEffect(() => {
+    if (!id) return
+
+    const subscribeToAssignment = () => {
+      socket.emit("assignment:subscribe", id)
+    }
+
+    const onAssignmentProcessing = (event: AssignmentProcessingEvent) => {
+      if (event.assignmentId !== id) return
+      setAssignment((current) => {
+        if (!current) return current
+        return { ...current, status: event.status }
+      })
+      setLoading(false)
+    }
+
+    const onAssignmentCompleted = (event: AssignmentCompletedEvent) => {
+      if (event.assignmentId !== id) return
+      void fetchAssignment()
+    }
+
+    const onAssignmentFailed = (event: AssignmentFailedEvent) => {
+      if (event.assignmentId !== id) return
+      void fetchAssignment()
+      setAssignment((current) => {
+        if (!current) return current
+        return { ...current, status: event.status }
+      })
+      if (event.error) {
+        console.error(event.error)
+      }
+      setLoading(false)
+    }
+
+    socket.on("assignment:processing", onAssignmentProcessing)
+    socket.on("assignment:completed", onAssignmentCompleted)
+    socket.on("assignment:failed", onAssignmentFailed)
+    socket.on("connect", subscribeToAssignment)
+
+    if (socket.connected) {
+      subscribeToAssignment()
+    }
+
+    return () => {
+      socket.off("assignment:processing", onAssignmentProcessing)
+      socket.off("assignment:completed", onAssignmentCompleted)
+      socket.off("assignment:failed", onAssignmentFailed)
+      socket.off("connect", subscribeToAssignment)
+    }
+  }, [fetchAssignment, id, socket])
 
   const handleDownload = async () => {
     if (!assignment?.result) return

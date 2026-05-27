@@ -62,7 +62,7 @@ export default function QuestionPaper({ assignment }: QuestionPaperProps) {
                 <div key={q.number} className="flex items-start gap-2 mb-3 text-[15px]">
                   <span className="font-medium shrink-0">{q.number}.</span>
                   <div className="flex-1 leading-relaxed">
-                    <span>
+                    <div>
                       <span
                         className={`inline-flex items-center justify-center text-[11px] font-medium px-2 py-[2px] rounded mr-2 ${
                           q.difficulty === "Easy"
@@ -78,7 +78,17 @@ export default function QuestionPaper({ assignment }: QuestionPaperProps) {
                       <span className="text-[13px] text-[#8c8c8c] ml-1.5 font-medium">
                         [{q.marks} {q.marks === 1 ? "Mark" : "Marks"}]
                       </span>
-                    </span>
+                    </div>
+                    {q.options && q.options.length > 0 && (
+                      <div className="grid grid-cols-2 gap-2 mt-2 text-[14.5px]">
+                        {q.options.map((opt: string, optIdx: number) => (
+                          <div key={optIdx} className="flex items-start gap-1.5">
+                            <span className="font-semibold">{String.fromCharCode(97 + optIdx)})</span>
+                            <span>{opt}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

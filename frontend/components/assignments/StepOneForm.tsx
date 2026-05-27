@@ -89,14 +89,12 @@ export default function StepOneForm({
             </label>
             <Select value={grade} onValueChange={onGradeChange}>
               <SelectTrigger className="!h-12 w-full rounded-2xl border border-[#dadada] !bg-white px-4 text-sm text-[#303030] shadow-none outline-none focus:border-[#1a1a1a] focus:ring-0 focus-visible:ring-0 [&>span]:line-clamp-1">
-                <span className="truncate">
-                  {grade ? `Grade ${grade}` : "Select Grade"}
-                </span>
+                <SelectValue placeholder="Select Grade" />
               </SelectTrigger>
               <SelectContent className="border-[#dadada] bg-white max-h-[200px] overflow-y-auto">
                 {GRADES.map((g) => (
                   <SelectItem key={g} value={g} className="text-sm text-[#303030] cursor-pointer">
-                    {g}
+                    Grade {g}
                   </SelectItem>
                 ))}
               </SelectContent>

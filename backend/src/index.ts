@@ -4,14 +4,20 @@ import dotenv from "dotenv";
 import http from "http";
 import mongoose from "mongoose";
 import { AddressInfo } from "net";
+import { QueueEvents } from "bullmq";
 import { Server } from "socket.io";
 import router from "./routes";
 import { FRONTEND_URL, MONGODB_URI, PORT } from "./config/env";
+import { bullRedisConnection } from "./lib/queue";
+import Assignment from "./models/Assignment";
 
 dotenv.config();
 
 const app = express();
 const httpServer = http.createServer(app);
+const queueEvents = new QueueEvents("assignments", {
+  connection: bullRedisConnection.duplicate(),
+});
 const io = new Server(httpServer, {
   cors: {
     origin: FRONTEND_URL,
@@ -21,7 +27,81 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
+  socket.on("assignment:subscribe", async (assignmentId: unknown) => {
+    if (typeof assignmentId !== "string" || !assignmentId.trim()) return;
+
+    try {
+      const assignment = await Assignment.findById(assignmentId);
+      if (!assignment) return;
+
+      if (assignment.status === "completed") {
+        socket.emit("assignment:completed", {
+          assignmentId,
+          status: "completed",
+          result: assignment.result,
+        });
+        return;
+      }
+
+      if (assignment.status === "failed") {
+        socket.emit("assignment:failed", {
+          assignmentId,
+          status: "failed",
+          error: "Assignment generation failed",
+        });
+        return;
+      }
+
+      socket.emit("assignment:processing", {
+        assignmentId,
+        status: "processing",
+      });
+    } catch (error: unknown) {
+      console.error("Failed to handle assignment:subscribe:", error);
+    }
+  });
   socket.on("disconnect", () => console.log("Client disconnected:", socket.id));
+});
+
+queueEvents.on("active", async ({ jobId }) => {
+  try {
+    const assignment = await Assignment.findOne({ jobId: String(jobId) }).select("_id");
+    if (!assignment) return;
+    io.emit("assignment:processing", {
+      assignmentId: assignment._id.toString(),
+      status: "processing",
+    });
+  } catch (error: unknown) {
+    console.error("Failed to emit assignment:processing from queue event:", error);
+  }
+});
+
+queueEvents.on("completed", async ({ jobId }) => {
+  try {
+    const assignment = await Assignment.findOne({ jobId: String(jobId) });
+    if (!assignment) return;
+    io.emit("assignment:completed", {
+      assignmentId: assignment._id.toString(),
+      status: "completed",
+      result: assignment.result,
+    });
+  } catch (error: unknown) {
+    console.error("Failed to emit assignment:completed from queue event:", error);
+  }
+});
+
+queueEvents.on("failed", async ({ jobId, failedReason }) => {
+  try {
+    const assignment = await Assignment.findOne({ jobId: String(jobId) }).select("_id");
+    if (!assignment) return;
+    io.emit("assignment:failed", {
+      assignmentId: assignment._id.toString(),
+      status: "failed",
+      error: failedReason || "Unknown worker failure",
+    });
+  } catch (error: unknown) {
+    console.error("Failed to emit assignment:failed from queue event:", error);
+  }
 });
 
 app.use(

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
+  Loader2,
   Mic,
   Plus,
   UploadCloud,
@@ -158,6 +159,7 @@ export default function NewAssignmentPage() {
         dueDate: dueDate.toISOString(),
         questionTypes,
         additionalInfo,
+        ...(uploadedFile ? { fileUrl: uploadedFile.name } : {}),
       };
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/assignments`, {
@@ -174,17 +176,27 @@ export default function NewAssignmentPage() {
       }
 
       const data = await response.json();
+      if (!data.assignmentId || typeof data.assignmentId !== "string") {
+        throw new Error("Assignment ID missing from response");
+      }
       router.push(`/assignments/${data.assignmentId}`);
     } catch (error) {
       console.error(error);
       alert("Failed to submit assignment. Please try again.");
-    } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
     <>
+      {isSubmitting ? (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/45">
+          <div className="flex items-center gap-3 rounded-2xl bg-white px-6 py-5 shadow-xl">
+            <Loader2 size={20} className="animate-spin text-[#1a1a1a]" />
+            <p className="text-sm font-medium text-[#303030]">Generating your question paper...</p>
+          </div>
+        </div>
+      ) : null}
       <div className="hidden h-screen overflow-hidden bg-[#eeeeee] md:flex">
         <Sidebar activeItem="Assignments" />
 
