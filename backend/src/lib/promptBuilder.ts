@@ -88,5 +88,5 @@ Rules:
   * Do NOT include the "options" array for non-MCQ questions.
 - answerKey must have one entry per question across all sections, numbered sequentially
 - All questions must be relevant to ${data.subject}. Always provide questions that are exactly according to Grade ${data.grade} standards.
-- Do not include any text outside the JSON object\`;
+- Do not include any text outside the JSON object`;
 }
