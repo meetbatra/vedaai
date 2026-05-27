@@ -104,9 +104,8 @@ queueEvents.on("failed", async ({ jobId, failedReason }) => {
   }
 });
 
-// Allow all origins — can be tightened to FRONTEND_URL once confirmed working
+// Allow all origins (CORS open for all)
 app.use(cors());
-app.options("*", cors());
 app.use(express.json());
 
 app.use("/api", router);
