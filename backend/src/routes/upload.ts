@@ -1,6 +1,6 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
 import multer from "multer";
-import { PDFParse } from "pdf-parse";
+import pdfParse from "pdf-parse";
 
 const router = Router();
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -24,23 +24,27 @@ router.post("/", upload.single("file"), async (req: Request, res: Response) => {
     const fileName = file.originalname.toLowerCase();
     const isPdf = file.mimetype === "application/pdf" || fileName.endsWith(".pdf");
     const isTxt = file.mimetype === "text/plain" || fileName.endsWith(".txt");
+    const isImage =
+      file.mimetype === "image/jpeg" ||
+      file.mimetype === "image/png" ||
+      fileName.endsWith(".jpg") ||
+      fileName.endsWith(".jpeg") ||
+      fileName.endsWith(".png");
 
-    if (!isPdf && !isTxt) {
-      return res.status(400).json({ error: "Only PDF or TXT files are allowed." });
+    if (!isPdf && !isTxt && !isImage) {
+      return res.status(400).json({ error: "Only PDF, TXT, JPEG, or PNG files are allowed." });
     }
 
     let extractedText = "";
+
     if (isPdf) {
-      const parser = new PDFParse({ data: file.buffer });
-      try {
-        const parsed = await parser.getText();
-        extractedText = parsed.text || "";
-      } finally {
-        await parser.destroy();
-      }
-    } else {
+      // pdf-parse default export is a function: pdfParse(buffer) => Promise<{ text: string }>
+      const parsed = await pdfParse(file.buffer);
+      extractedText = parsed.text || "";
+    } else if (isTxt) {
       extractedText = file.buffer.toString("utf-8");
     }
+    // For images: extractedText stays "" — the frontend currently doesn't use OCR for images
 
     return res.status(200).json({ success: true, extractedText });
   } catch (error) {

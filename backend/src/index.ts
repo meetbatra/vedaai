@@ -22,6 +22,7 @@ const io = new Server(httpServer, {
   cors: {
     origin: FRONTEND_URL,
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
@@ -104,11 +105,16 @@ queueEvents.on("failed", async ({ jobId, failedReason }) => {
   }
 });
 
-app.use(
-  cors({
-    origin: FRONTEND_URL,
-  }),
-);
+const corsOptions = {
+  origin: FRONTEND_URL,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+// Explicitly handle preflight OPTIONS requests for all routes
+app.options("*", cors(corsOptions));
 app.use(express.json());
 
 app.use("/api", router);
