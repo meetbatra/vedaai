@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Settings } from "lucide-react";
 
 type SidebarProps = {
@@ -18,6 +19,8 @@ const navItems = [
 export default function Sidebar({
   activeItem = "Assignments",
 }: SidebarProps) {
+  const router = useRouter();
+
   return (
     <aside className="fixed bottom-3 left-3 top-3 hidden w-[304px] flex-col rounded-2xl bg-white px-6 py-7 shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)] md:flex z-50">
       <div className="mb-9 flex items-center gap-3">
@@ -41,7 +44,11 @@ export default function Sidebar({
           background: "linear-gradient(to bottom, #FF7950, #C0350A)",
         }}
       >
-        <button className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1c1c1e] px-5 text-[15px] font-medium text-white hover:bg-[#2a2a2a] transition-colors">
+        <button
+          type="button"
+          onClick={() => router.push("/assignments/new")}
+          className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1c1c1e] px-5 text-[15px] font-medium text-white hover:bg-[#2a2a2a] transition-colors"
+        >
           <Image src="/stars.svg" alt="" width={16} height={16} />
           <span>Create Assignment</span>
         </button>

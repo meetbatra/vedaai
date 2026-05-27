@@ -15,6 +15,7 @@ type QuestionTypePayload = {
 type ResultQuestion = {
   number: number;
   text: string;
+  options?: string[];
   difficulty?: "Easy" | "Moderate" | "Challenging";
   marks: number;
 };
@@ -111,13 +112,26 @@ const buildQuestionPaperHtml = ({
       const questionsHtml = section.questions
         .map((question) => {
           const difficulty = question.difficulty ?? "Easy";
+          
+          let optionsHtml = "";
+          if (question.options && question.options.length > 0) {
+            optionsHtml = `
+              <div class="question-options">
+                ${question.options.map((opt, idx) => `<div class="option-item"><span class="option-label">${String.fromCharCode(97 + idx)})</span> ${escapeHtml(opt)}</div>`).join("")}
+              </div>
+            `;
+          }
+          
           return `
             <div class="question-row">
               <span class="question-number">${question.number}.</span>
               <div class="question-body">
-                <span class="difficulty-badge" style="${difficultyBadgeStyle(difficulty)}">${escapeHtml(difficulty)}</span>
-                ${escapeHtml(question.text)}
-                <span class="question-marks">[${question.marks} ${question.marks === 1 ? "Mark" : "Marks"}]</span>
+                <div>
+                  <span class="difficulty-badge" style="${difficultyBadgeStyle(difficulty)}">${escapeHtml(difficulty)}</span>
+                  ${escapeHtml(question.text)}
+                  <span class="question-marks">[${question.marks} ${question.marks === 1 ? "Mark" : "Marks"}]</span>
+                </div>
+                ${optionsHtml}
               </div>
             </div>
           `;
@@ -202,6 +216,9 @@ const buildQuestionPaperHtml = ({
         margin-right: 8px;
       }
       .question-marks { font-size: 13px; color: #8c8c8c; margin-left: 6px; font-weight: 600; }
+      .question-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; font-size: 14.5px; }
+      .option-item { display: flex; align-items: flex-start; gap: 6px; }
+      .option-label { font-weight: 600; }
       .end-marker {
         text-align: center;
         font-size: 15px;

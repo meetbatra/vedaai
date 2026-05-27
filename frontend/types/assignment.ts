@@ -1,6 +1,7 @@
 export interface Question {
   number: number
   text: string
+  options?: string[]
   difficulty: "Easy" | "Moderate" | "Challenging"
   marks: number
 }
