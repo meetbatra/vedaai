@@ -27,10 +27,21 @@ export default function MobileBottomNav() {
             <button
               key={item.label}
               type="button"
-              onClick={() => router.push(item.href)}
+              onClick={() => {
+                if (item.href === "/" || item.href === "/assignments") {
+                  router.push(item.href);
+                }
+              }}
               className="flex flex-col items-center gap-1"
             >
-              <Image src={item.icon} alt={item.label} width={item.label === "Assignments" ? 22 : 20} height={item.label === "Assignments" ? 22 : 20} unoptimized />
+              <Image 
+                src={item.icon} 
+                alt={item.label} 
+                width={item.label === "Assignments" ? 22 : 20} 
+                height={item.label === "Assignments" ? 22 : 20} 
+                className={isActive(item.href) ? "opacity-100" : "opacity-40"}
+                unoptimized 
+              />
               <span className={`text-[10px] ${isActive(item.href) ? "text-white" : "text-white/40"}`}>
                 {item.label}
               </span>

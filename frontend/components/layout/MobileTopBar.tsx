@@ -26,7 +26,15 @@ export default function MobileTopBar() {
             <Bell size={18} className="text-[#303030]" />
             <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#FF5623]" />
           </div>
-          <div className="h-8 w-8 overflow-hidden rounded-full bg-gray-300" />
+          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[#ececec]">
+            <Image
+              src="/avatar_2.jpeg"
+              alt="School Profile"
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
           <button type="button" className="flex h-8 w-8 items-center justify-center rounded-full">
             <Menu size={20} className="text-[#1D1B20]" />
           </button>

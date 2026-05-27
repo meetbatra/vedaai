@@ -184,7 +184,11 @@ export default function AssignmentsPage() {
         </div>
 
         <main className="flex-1 overflow-y-auto pb-28 pt-6">
-          {isEmpty ? (
+          {loading ? (
+            <div className="flex h-full min-h-[300px] w-full items-center justify-center">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-black/10 border-t-[#24b26b]" />
+            </div>
+          ) : isEmpty ? (
             <EmptyState />
           ) : (
             <>
@@ -409,7 +413,11 @@ export default function AssignmentsPage() {
           </span>
         </div>
 
-        {isEmpty ? (
+        {loading ? (
+          <div className="flex h-full min-h-[200px] w-full items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-black/10 border-t-[#24b26b]" />
+          </div>
+        ) : isEmpty ? (
           <EmptyState />
         ) : (
           <>
